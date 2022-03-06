@@ -63,12 +63,12 @@ func (db *userConnection) VerifyCredentials(email string, password string) inter
 
 func (db *userConnection) IsDuplicateEmail(email string) (tx *gorm.DB) {
 	var user entity.User
-	return db.connection.Where("email = ?").Take(&user)
+	return db.connection.Where("email = ?", email).Take(&user)
 }
 
 func (db *userConnection) FindByEmail(email string) entity.User {
 	var user entity.User
-	db.connection.Where("email = ?").Take(&user)
+	db.connection.Where("email = ?", email).Take(&user)
 	return user
 }
 
