@@ -11,7 +11,7 @@ import (
 type UserRepository interface {
 	InsertUser(user entity.User) entity.User
 	UpdateUser(user entity.User) entity.User
-	GetUser(userID uint64) entity.User
+	GetUser(userID string) entity.User
 	VerifyCredentials(email string, password string) interface{}
 	IsDuplicateEmail(email string) (tx *gorm.DB)
 	FindByEmail(email string) entity.User
@@ -46,7 +46,7 @@ func (db *userConnection) UpdateUser(user entity.User) entity.User {
 	return user
 }
 
-func (db *userConnection) GetUser(userID uint64) entity.User {
+func (db *userConnection) GetUser(userID string) entity.User {
 	var user entity.User
 	db.connection.Find(&user, userID)
 	return user
