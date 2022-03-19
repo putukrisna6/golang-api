@@ -30,6 +30,14 @@ func main() {
 	defer config.CloseDatabaseConnection(db)
 	r := gin.Default()
 
+	r.Use(cors.New(cors.Config{
+		AllowMethods:     []string{"PUT", "PATCH", "GET", "DELETE", "HEAD", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowAllOrigins:  true,
+		AllowCredentials: true,
+	}))
+
 	authRoutes := r.Group("api/auth")
 	{
 		authRoutes.POST("/login", authController.Login)
@@ -57,6 +65,5 @@ func main() {
 		})
 	})
 
-	r.Use(cors.Default())
 	r.Run()
 }
