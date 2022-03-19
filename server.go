@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/putukrisna6/golang-api/config"
 	"github.com/putukrisna6/golang-api/controller"
@@ -55,5 +56,7 @@ func main() {
 			"message": "Hello, World",
 		})
 	})
+
+	r.Use(cors.Default())
 	r.Run()
 }
