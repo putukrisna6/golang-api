@@ -35,3 +35,42 @@
   - PUT     /api/books/:id    
   - DELETE  /api/books/:id    
   - GET     /        
+
+- some jquery request I used to test the APIs from another domain
+  ```js
+  $.ajax({
+        url: "http://localhost:8080/api/receipts/all"
+  })
+  ```
+
+  ```js
+  $.ajax({
+        url: "http://localhost:8080/api/receipts/1"
+  })
+  ```
+  ```js
+  $.ajax({
+        type: 'POST',
+        url: "http://localhost:8080/api/receipts",
+        data: {"amount":3,"total":67},
+        dataType: "json",
+        success: function(resultData) { alert("Save Complete") }
+  });
+  ```
+  ```js
+  $.ajax({
+        type: 'PUT',
+        url: "http://localhost:8080/api/receipts",
+        data: {"id":4,"amount":323,"total":6723.2},
+        dataType: "json",
+        success: function(resultData) { alert("Update Complete") }
+  });
+  ```
+  ```js
+  $.ajax({
+      type: 'DELETE',
+      url: "http://localhost:8080/api/receipts/4",
+      dataType: "json",
+      success: function(resultData) { alert("Delete Complete") }
+  });
+  ```
