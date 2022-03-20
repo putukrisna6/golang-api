@@ -41,33 +41,33 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	authRoutes := r.Group("api/auth")
+	authRoutes := r.Group("/api/auth")
 	{
-		authRoutes.POST("/login", authController.Login)
-		authRoutes.POST("/register", authController.Register)
+		authRoutes.POST("login", authController.Login)
+		authRoutes.POST("register", authController.Register)
 	}
 
-	userRoutes := r.Group("api/users", middleware.AuthorizeJWT(jwtService))
+	userRoutes := r.Group("/api/users", middleware.AuthorizeJWT(jwtService))
 	{
 		userRoutes.GET("profile", userController.Get)
-		userRoutes.PUT("/", userController.Update)
+		userRoutes.PUT("", userController.Update)
 	}
 
-	bookRoutes := r.Group("api/books", middleware.AuthorizeJWT(jwtService))
+	bookRoutes := r.Group("/api/books", middleware.AuthorizeJWT(jwtService))
 	{
-		bookRoutes.GET("/", bookController.All)
-		bookRoutes.POST("/", bookController.Insert)
+		bookRoutes.GET("", bookController.All)
+		bookRoutes.POST("", bookController.Insert)
 		bookRoutes.GET("/:id", bookController.Get)
-		bookRoutes.PUT("/", bookController.Update)
+		bookRoutes.PUT("", bookController.Update)
 		bookRoutes.DELETE("/:id", bookController.Delete)
 	}
 
-	receiptRoutes := r.Group("api/receipts")
+	receiptRoutes := r.Group("/api/receipts")
 	{
-		receiptRoutes.GET("/", receiptController.All)
-		receiptRoutes.POST("/", receiptController.Insert)
+		receiptRoutes.GET("/all", receiptController.All)
+		receiptRoutes.POST("", receiptController.Insert)
 		receiptRoutes.GET("/:id", receiptController.Show)
-		receiptRoutes.PUT("/", receiptController.Update)
+		receiptRoutes.PUT("", receiptController.Update)
 		receiptRoutes.DELETE("/:id", receiptController.Delete)
 	}
 

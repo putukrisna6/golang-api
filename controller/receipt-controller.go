@@ -84,7 +84,6 @@ func (c *receiptController) Update(context *gin.Context) {
 }
 
 func (c *receiptController) Delete(context *gin.Context) {
-	var receipt entity.Receipt
 	id, err := strconv.ParseUint(context.Param("id"), 0, 0)
 	if err != nil {
 		res := helper.BuildErrorResponse("parameter ID must not be empty", err.Error(), helper.EmptyObj{})
@@ -92,7 +91,13 @@ func (c *receiptController) Delete(context *gin.Context) {
 		return
 	}
 
-	receipt.ID = id
+	var receipt entity.Receipt = c.receiptService.Show(id)
+	if (receipt == entity.Receipt{}) {
+		res := helper.BuildErrorResponse("failed to retrieve Receipt", "no data with given receiptID", helper.EmptyObj{})
+		context.AbortWithStatusJSON(http.StatusNotFound, res)
+		return
+	}
+
 	c.receiptService.Delete(receipt)
 	message := fmt.Sprintf("Receipt with ID %v successfuly deleted", receipt.ID)
 	res := helper.BuildValidResponse(message, helper.EmptyObj{})
