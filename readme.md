@@ -9,6 +9,7 @@
 
 ## How to use:
 - Clone the repo
+- Setup your .env file
 - Run build.sh
 - `go run server.go`
 
