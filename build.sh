@@ -1,5 +1,6 @@
 #!/bin/sh
 git pull origin master
+sudo docker-compose -p local-prep --file docker-compose.yml up -d
 sudo docker stop golang-api
 sudo docker rm golang-api
 sudo docker build -t golang-api .

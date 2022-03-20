@@ -9,7 +9,6 @@
 
 ## How to use:
 - Clone the repo
-- `sudo docker-compose -p local-prep --file docker-compose.yml up -d`
 - Run build.sh
 - `go run server.go`
 

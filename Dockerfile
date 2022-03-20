@@ -1,4 +1,8 @@
-FROM golang:1.17
+FROM golang:1.17.8-alpine
+
+LABEL maintainer="Putu Krisna Andyartha"
+
+RUN apk update && apk add --no-cache git
 
 WORKDIR /go/src/app
 COPY . .
