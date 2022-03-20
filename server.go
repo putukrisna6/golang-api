@@ -12,18 +12,21 @@ import (
 )
 
 var (
-	db             *gorm.DB                  = config.SetupDatabaseConnection()
-	userRepository repository.UserRepository = repository.NewUserRepository(db)
-	bookRepository repository.BookRepository = repository.NewBookRepository(db)
+	db                *gorm.DB                     = config.SetupDatabaseConnection()
+	userRepository    repository.UserRepository    = repository.NewUserRepository(db)
+	bookRepository    repository.BookRepository    = repository.NewBookRepository(db)
+	receiptRepository repository.ReceiptRepository = repository.NewReceiptRepository(db)
 
-	jwtService  service.JWTService  = service.NewJWTService()
-	authService service.AuthService = service.NewAuthService(userRepository)
-	userService service.UserService = service.NewUserService(userRepository)
-	bookService service.BookService = service.NewBookService(bookRepository)
+	jwtService     service.JWTService     = service.NewJWTService()
+	authService    service.AuthService    = service.NewAuthService(userRepository)
+	userService    service.UserService    = service.NewUserService(userRepository)
+	bookService    service.BookService    = service.NewBookService(bookRepository)
+	receiptService service.ReceiptService = service.NewReceiptService(receiptRepository)
 
-	authController controller.AuthController = controller.NewAuthController(authService, jwtService)
-	userController controller.UserController = controller.NewUserController(userService, jwtService)
-	bookController controller.BookController = controller.NewBookController(bookService, jwtService)
+	authController    controller.AuthController    = controller.NewAuthController(authService, jwtService)
+	userController    controller.UserController    = controller.NewUserController(userService, jwtService)
+	bookController    controller.BookController    = controller.NewBookController(bookService, jwtService)
+	receiptController controller.ReceiptController = controller.NewReceiptController(receiptService)
 )
 
 func main() {
@@ -55,8 +58,17 @@ func main() {
 		bookRoutes.GET("/", bookController.All)
 		bookRoutes.POST("/", bookController.Insert)
 		bookRoutes.GET("/:id", bookController.Get)
-		bookRoutes.PUT("/:id", bookController.Update)
+		bookRoutes.PUT("/", bookController.Update)
 		bookRoutes.DELETE("/:id", bookController.Delete)
+	}
+
+	receiptRoutes := r.Group("api/receipts")
+	{
+		receiptRoutes.GET("/", receiptController.All)
+		receiptRoutes.POST("/", receiptController.Insert)
+		receiptRoutes.GET("/:id", receiptController.Show)
+		receiptRoutes.PUT("/", receiptController.Update)
+		receiptRoutes.DELETE("/:id", receiptController.Delete)
 	}
 
 	r.GET("/", func(c *gin.Context) {
