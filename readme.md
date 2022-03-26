@@ -4,14 +4,15 @@
 - Gin for the web framework
 - Gorm for ORM
 - jwt-go for authentication
-- Docker with MySQL and phpmyadmin
-- Portainer for container managements
+- Redis for caching
+- MariaDB for main db
+- phpMyAdmin for db management
+- Portainer for container management
 
 ## How to use:
 - Clone the repo
 - Setup your .env file
-- Run build.sh
-- `go run server.go`
+- Run `docker-compose up -d`
 
 ## Misc info:
 ### phpMyAdmin
