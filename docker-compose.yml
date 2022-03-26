@@ -1,10 +1,15 @@
 version: '3.8'
+
+networks:
+  go-app:
+    driver: bridge
+
 services:
   app:
     container_name: golang-api
     build: .
     ports:
-      - 8080:8080
+      - "8080:8080"
     restart: on-failure
     volumes:
       - ./api:/usr/src/app/
@@ -19,7 +24,7 @@ services:
       - MYSQL_ROOT_PASSWORD=test
       - MYSQL_DATABASE=golang_api
     ports:
-      - 3306:3306
+      - "3306:3306"
     volumes:
       - ./database:/var/lib/mysql
     networks:
@@ -28,12 +33,16 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: phymyadmin
+    depends_on:
+      - db
     environment:
-      - PMA_ARBITRARY=1
       - PMA_HOST=db
+      - PMA_USER=${DB_USER}
+      - PMA_PASSWORD=${DB_PASS}
+      - PMA_PORT=3306
     restart: always
     ports:
-      - 8085:80
+      - "8085:80"
     volumes:
       - /sessions
     links:
@@ -46,11 +55,11 @@ services:
     container_name: portainer
     restart: always
     volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./etc/localtime:/etc/localtime:ro
+      - ./var/run/docker.sock:/var/run/docker.sock:ro
       - ./portainer-data:/data
     ports:
-      - 9000:9000 
+      - "9000:9000"
     networks:
       - go-app
 
@@ -60,10 +69,6 @@ services:
     volumes:
       - ./redis-data:/data
     ports:
-      - 6379:6379
+      - "6379:6379"
     networks:
       - go-app
-
-networks:
-  go-app:
-    driver: bridge  
