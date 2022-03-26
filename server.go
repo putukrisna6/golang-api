@@ -3,6 +3,8 @@ package main
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
+	"github.com/putukrisna6/golang-api/cache"
 	"github.com/putukrisna6/golang-api/config"
 	"github.com/putukrisna6/golang-api/controller"
 	"github.com/putukrisna6/golang-api/middleware"
@@ -17,6 +19,9 @@ var (
 	bookRepository    repository.BookRepository    = repository.NewBookRepository(db)
 	receiptRepository repository.ReceiptRepository = repository.NewReceiptRepository(db)
 
+	rd           *redis.Client      = config.SetupRedisConnection()
+	receiptCache cache.ReceiptCache = cache.NewReceiptCache(rd, 1000) // random expiration lmao
+
 	jwtService     service.JWTService     = service.NewJWTService()
 	authService    service.AuthService    = service.NewAuthService(userRepository)
 	userService    service.UserService    = service.NewUserService(userRepository)
@@ -26,7 +31,7 @@ var (
 	authController    controller.AuthController    = controller.NewAuthController(authService, jwtService)
 	userController    controller.UserController    = controller.NewUserController(userService, jwtService)
 	bookController    controller.BookController    = controller.NewBookController(bookService, jwtService)
-	receiptController controller.ReceiptController = controller.NewReceiptController(receiptService)
+	receiptController controller.ReceiptController = controller.NewReceiptController(receiptService, receiptCache)
 )
 
 func main() {

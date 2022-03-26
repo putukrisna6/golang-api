@@ -32,3 +32,10 @@ services:
       - ./portainer-data:/data
     ports:
       - 9000:9000
+  cache:
+    image: redis:alpine
+    restart: always
+    volumes:
+      - ./redis-data:/data
+    ports:
+      - 6379:6379

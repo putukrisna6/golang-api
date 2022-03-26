@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/putukrisna6/golang-api/cache"
 	"github.com/putukrisna6/golang-api/dto"
 	"github.com/putukrisna6/golang-api/entity"
 	"github.com/putukrisna6/golang-api/helper"
@@ -22,11 +23,13 @@ type ReceiptController interface {
 
 type receiptController struct {
 	receiptService service.ReceiptService
+	receiptCache   cache.ReceiptCache
 }
 
-func NewReceiptController(receiptService service.ReceiptService) ReceiptController {
+func NewReceiptController(receiptService service.ReceiptService, receiptCache cache.ReceiptCache) ReceiptController {
 	return &receiptController{
 		receiptService: receiptService,
+		receiptCache:   receiptCache,
 	}
 }
 
@@ -44,11 +47,15 @@ func (c *receiptController) Show(context *gin.Context) {
 		return
 	}
 
-	var receipt entity.Receipt = c.receiptService.Show(id)
+	var receipt entity.Receipt = c.receiptCache.Get(strconv.FormatUint(id, 10))
 	if (receipt == entity.Receipt{}) {
-		res := helper.BuildErrorResponse("failed to retrieve Receipt", "no data with given receiptID", helper.EmptyObj{})
-		context.AbortWithStatusJSON(http.StatusNotFound, res)
-		return
+		var receipt entity.Receipt = c.receiptService.Show(id)
+		if (receipt == entity.Receipt{}) {
+			res := helper.BuildErrorResponse("failed to retrieve Receipt", "no data with given receiptID", helper.EmptyObj{})
+			context.AbortWithStatusJSON(http.StatusNotFound, res)
+			return
+		}
+		c.receiptCache.Set(strconv.FormatUint(id, 10), receipt)
 	}
 
 	res := helper.BuildValidResponse("OK", receipt)
