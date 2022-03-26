@@ -1,5 +1,18 @@
 version: '3.8'
 services:
+  app:
+    container_name: golang-api
+    build: .
+    ports:
+      - 8080:8080
+    restart: on-failure
+    volumes:
+      - ./api:/usr/src/app/
+    depends_on:
+      - db
+    networks:
+      - go-app
+
   db:
     image: mariadb
     environment:
@@ -9,6 +22,9 @@ services:
       - 3306:3306
     volumes:
       - ./database:/var/lib/mysql
+    networks:
+      - go-app
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: phymyadmin
@@ -22,6 +38,9 @@ services:
       - /sessions
     links:
       - db
+    networks:
+      - go-app
+
   portainer:
     image: portainer/portainer-ce:latest
     container_name: portainer
@@ -31,7 +50,10 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./portainer-data:/data
     ports:
-      - 9000:9000
+      - 9000:9000 
+    networks:
+      - go-app
+
   cache:
     image: redis:alpine
     restart: always
@@ -39,3 +61,9 @@ services:
       - ./redis-data:/data
     ports:
       - 6379:6379
+    networks:
+      - go-app
+
+networks:
+  go-app:
+    driver: bridge  
