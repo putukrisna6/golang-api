@@ -1,14 +1,27 @@
-FROM golang:1.18-alpine
+FROM golang:1.18-alpine as builder
 
 LABEL maintainer="Putu Krisna Andyartha"
 
 RUN apk update && apk add --no-cache git
 
-WORKDIR /go/src/app
+WORKDIR /app
+
+COPY go.mod go.sum ./
+
+RUN go mod download
+
 COPY . .
 
-RUN go get -d -v ./...
-RUN go install -v ./...
-RUN go build -o /bin/myapp
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 
-CMD [ "/bin/myapp" ]
+FROM golang:1.18-alpine
+RUN apk --no-cache add ca-certificates
+
+WORKDIR /root/
+
+COPY --from=builder /app/main .
+COPY --from=builder /app/.env .  
+
+EXPOSE 8080
+
+CMD ["./main"]
