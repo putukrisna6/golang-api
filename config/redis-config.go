@@ -14,15 +14,14 @@ func SetupRedisConnection() *redis.Client {
 		panic("failed to load env")
 	}
 
-	redisPort := os.Getenv("REDIS_PORT")
-	redisPass := os.Getenv("REDIS_PASS")
-	redisHost := os.Getenv("REDIS_HOST")
+	redisUrl := os.Getenv("REDIS_URL")
 
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     redisHost + ":" + redisPort,
-		Password: redisPass,
-		DB:       0, // use default DB
-	})
+	opts, err := redis.ParseURL(redisUrl)
+	if err != nil {
+		panic(err)
+	}
+
+	rdb := redis.NewClient(opts)
 
 	return rdb
 }
