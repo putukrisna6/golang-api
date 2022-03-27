@@ -26,16 +26,21 @@
 - use Postman or similar tools and set the url to `http://localhost:8080/`
 - do not forget to set the `Authorization` key within `Headers` on your requests on some routes protected by the jwt middleware
 - available routes: 
-  - POST    /api/auth/login
-  - POST    /api/auth/register
-  - GET     /api/users/profile
-  - PUT     /api/users/
-  - GET     /api/books/       
-  - POST    /api/books/       
-  - GET     /api/books/:id    
-  - PUT     /api/books/:id    
-  - DELETE  /api/books/:id    
-  - GET     /        
+  - POST   /api/auth/login
+  - POST   /api/auth/register
+  - GET    /api/users/profile
+  - PUT    /api/users
+  - GET    /api/books
+  - POST   /api/books
+  - GET    /api/books/:id
+  - PUT    /api/books
+  - DELETE /api/books/:id
+  - GET    /api/receipts/all
+  - POST   /api/receipts
+  - GET    /api/receipts/:id
+  - PUT    /api/receipts
+  - DELETE /api/receipts/:id
+  - GET    /       
 
 - some jquery request I used to test the APIs from another domain
   ```js
