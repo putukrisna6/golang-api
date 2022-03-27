@@ -19,6 +19,7 @@ type ReceiptController interface {
 	Insert(context *gin.Context)
 	Update(context *gin.Context)
 	Delete(context *gin.Context)
+	RefreshCache(keys ...string)
 }
 
 type receiptController struct {
@@ -34,7 +35,12 @@ func NewReceiptController(receiptService service.ReceiptService, receiptCache ca
 }
 
 func (c *receiptController) All(context *gin.Context) {
-	var receipts []entity.Receipt = c.receiptService.All()
+	var receipts []entity.Receipt = c.receiptCache.Get("all")
+	if receipts == nil {
+		receipts = c.receiptService.All()
+		c.receiptCache.Set("all", receipts)
+	}
+
 	res := helper.BuildValidResponse("OK", receipts)
 	context.JSON(http.StatusOK, res)
 }
@@ -47,18 +53,19 @@ func (c *receiptController) Show(context *gin.Context) {
 		return
 	}
 
-	var receipt entity.Receipt = c.receiptCache.Get(strconv.FormatUint(id, 10))
-	if (receipt == entity.Receipt{}) {
+	var arr []entity.Receipt = c.receiptCache.Get(strconv.FormatUint(id, 10))
+	if arr == nil {
 		var receipt entity.Receipt = c.receiptService.Show(id)
 		if (receipt == entity.Receipt{}) {
 			res := helper.BuildErrorResponse("failed to retrieve Receipt", "no data with given receiptID", helper.EmptyObj{})
 			context.AbortWithStatusJSON(http.StatusNotFound, res)
 			return
 		}
-		c.receiptCache.Set(strconv.FormatUint(id, 10), receipt)
+		arr = append(arr, receipt)
+		c.receiptCache.Set(strconv.FormatUint(id, 10), arr)
 	}
 
-	res := helper.BuildValidResponse("OK", receipt)
+	res := helper.BuildValidResponse("OK", arr[0])
 	context.JSON(http.StatusOK, res)
 }
 
@@ -74,6 +81,8 @@ func (c *receiptController) Insert(context *gin.Context) {
 	result := c.receiptService.Insert(receiptCreateDTO)
 	response := helper.BuildValidResponse("OK", result)
 	context.JSON(http.StatusCreated, response)
+
+	c.RefreshCache("all")
 }
 
 func (c *receiptController) Update(context *gin.Context) {
@@ -88,6 +97,8 @@ func (c *receiptController) Update(context *gin.Context) {
 	result := c.receiptService.Update(receiptUpdateDTO)
 	response := helper.BuildValidResponse("OK", result)
 	context.JSON(http.StatusOK, response)
+
+	c.RefreshCache("all", strconv.FormatUint(receiptUpdateDTO.ID, 10))
 }
 
 func (c *receiptController) Delete(context *gin.Context) {
@@ -109,4 +120,12 @@ func (c *receiptController) Delete(context *gin.Context) {
 	message := fmt.Sprintf("Receipt with ID %v successfuly deleted", receipt.ID)
 	res := helper.BuildValidResponse(message, helper.EmptyObj{})
 	context.JSON(http.StatusOK, res)
+
+	c.RefreshCache("all", strconv.FormatUint(id, 10))
+}
+
+func (c *receiptController) RefreshCache(keys ...string) {
+	for _, key := range keys {
+		c.receiptCache.Del(key)
+	}
 }
