@@ -32,11 +32,11 @@ func (rc *receiptCache) Set(key string, value entity.Receipt) {
 		panic(err)
 	}
 
-	rc.cache.Set(context.TODO(), key, json, rc.expires*time.Second)
+	rc.cache.Set(context.TODO(), "receipt:"+key, json, rc.expires*time.Second)
 }
 
 func (rc *receiptCache) Get(key string) entity.Receipt {
-	val, errGet := rc.cache.Get(context.TODO(), key).Result()
+	val, errGet := rc.cache.Get(context.TODO(), "receipt:"+key).Result()
 
 	if errGet == redis.Nil {
 		return entity.Receipt{}
